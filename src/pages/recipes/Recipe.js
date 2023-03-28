@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { useFetch } from '../../hooks/082 useFetch'
 import { useTheme } from '../../hooks/useTheme'
+import { db, collection, doc, updateDoc, onSnapshot } from '../../firebase/config'
+
 //import stylesheet
 import './Recipe.css'
 
@@ -9,9 +10,39 @@ import './Recipe.css'
 
 export default function Recipe() {
   const { id } = useParams()
-  const url = 'http://localhost:3000/recipes/' + id
-  const {data:recipes, isPending, error } = useFetch(url)
   const {mode} = useTheme()
+
+  const [recipes, setRecipes] = useState(null)
+  const [isPending, setIsPending] = useState(false)
+  const [error, setError] = useState(false)
+
+  useEffect(() => {
+    setIsPending(true)
+
+    const recipeGet = collection(db, 'recipes')
+    const docRef = doc(recipeGet, id)
+   const unsub =  onSnapshot(docRef, (doc) => {
+      if(doc.exists) {
+        setIsPending(false)
+        setRecipes(doc.data())
+      }else{
+        setIsPending(false)
+        setError("Could not find recipe")
+      }
+    })
+
+    return () => unsub()
+
+  }, [id])
+
+    const handleClick = () => {
+      const recipeGet = collection(db, 'recipes')
+      const docRef = doc(recipeGet, id)
+      updateDoc(docRef,{
+        title: 'something completely different'
+      })
+    }
+
   return (
     <div className={`recipe ${mode}`}>
       {isPending && <p className='loading'>Loading...</p>}
@@ -27,6 +58,7 @@ export default function Recipe() {
             <li key={ing} className={`recipe-ingredients ${mode}`}>{ing}</li>))}
           </ul>
           <p className='method'>{recipes.method}</p>
+          <button onClick={handleClick}>Update Me</button>
         </>
       )}
     </div>

@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react'
+
+import React from 'react'
 import { useState, useRef } from 'react'
 import { useHistory } from 'react-router-dom'
-import { useFetch } from '../../hooks/082 useFetch'
+import { db, collection, addDoc } from '../../firebase/config'
 import { useTheme } from '../../hooks/useTheme'
 
 
@@ -18,11 +19,19 @@ export default function Create() {
   const ingredientInput = useRef(null)
   const history = useHistory()
 
-  const { postData, data, error } = useFetch("http://localhost:3000/recipes", 'POST') 
+  
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    postData({title, ingredients, method, cookingTime: cookingTime + 'minutes'})
+    const doc = {title, ingredients, method, cookingTime: cookingTime + 'minutes'}
+
+    try{
+     await addDoc(collection(db, 'recipes'), doc)
+     history.push('/')
+    } catch(err){
+      console.log(err)
+    }
+    
     setIngredients([])
     setCookingTime("")
     setMethod("")
@@ -42,12 +51,7 @@ export default function Create() {
   }
 
   //redirect the user when we get data response
- useEffect(() => {
-  if(data){
-    history.push('/')
-  }
- }, [data, history])
-
+ 
 
  const {mode} = useTheme()
 
