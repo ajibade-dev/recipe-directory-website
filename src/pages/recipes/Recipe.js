@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTheme } from '../../hooks/useTheme'
-import { db, collection, doc, updateDoc, onSnapshot } from '../../firebase/config'
+import { db, collection, doc, onSnapshot } from '../../firebase/config'
 
 //import stylesheet
 import './Recipe.css'
@@ -35,13 +35,7 @@ export default function Recipe() {
 
   }, [id])
 
-    const handleClick = () => {
-      const recipeGet = collection(db, 'recipes')
-      const docRef = doc(recipeGet, id)
-      updateDoc(docRef,{
-        title: 'something completely different'
-      })
-    }
+    
 
   return (
     <div className={`recipe ${mode}`}>
@@ -58,7 +52,7 @@ export default function Recipe() {
             <li key={ing} className={`recipe-ingredients ${mode}`}>{ing}</li>))}
           </ul>
           <p className='method'>{recipes.method}</p>
-          <button onClick={handleClick}>Update Me</button>
+          
         </>
       )}
     </div>
