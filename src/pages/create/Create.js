@@ -1,7 +1,7 @@
 
 import React from 'react'
 import { useState, useRef } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { db, collection, addDoc } from '../../firebase/config'
 import { useTheme } from '../../hooks/useTheme'
 
@@ -17,7 +17,7 @@ export default function Create() {
   const [newIngredients, setNewIngredients] = useState('')
   const [ingredients, setIngredients] = useState([])
   const ingredientInput = useRef(null)
-  const history = useHistory()
+  const navigate = useNavigate()
 
   
 
@@ -27,7 +27,7 @@ export default function Create() {
 
     try{
      await addDoc(collection(db, 'recipes'), doc)
-     history.push('/')
+     navigate('/')
     } catch(err){
       console.log(err)
     }
